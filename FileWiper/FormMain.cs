@@ -101,6 +101,77 @@ namespace FileWiper
 
         }
 
+        private void btnWipeFolder_Click(object sender, EventArgs e)
+        {
+            if (this.openFolder.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                var count = 0;
+                foreach (var item in System.IO.Directory.GetFiles(this.openFolder.SelectedPath))
+                {
+                    try
+                    {
+                        WipeFileContent(item);
+                        count++;
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.ToString(), "error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+
+                MessageBox.Show(string.Format("{0} file{1} content {2} successfully wiped!",
+                    count, count > 1 ? "s'" : "'s", count > 1 ? "are" : "is"));
+            }
+        }
+
+        private void btnDeleteFolder_Click(object sender, EventArgs e)
+        {
+            if(this.openFolder.ShowDialog()== System.Windows.Forms.DialogResult.OK)
+            {
+                var count = 0;
+                foreach (var item in System.IO.Directory.GetFiles(this.openFolder.SelectedPath))
+                {
+                    try
+                    {
+                        DeleteFile(item);
+                        count++;
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.ToString(), "error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+
+                DeleteFolder(this.openFolder.SelectedPath);
+
+                MessageBox.Show(string.Format("{0} file{1}(and the folder) {2} successfully deleted!",
+                    count, count > 1 ? "s" : "", count > 1 ? "are" : "is"));
+            }
+        }
+
+        private void DeleteFolder(string foldername)
+        {
+            var folderInfo = new System.IO.DirectoryInfo(foldername);
+
+            var parentDirectory = folderInfo.Parent.FullName;
+            var name = 0;
+            var prefix = "";
+            var newFoldername = System.IO.Path.Combine(parentDirectory, String.Format("{0}{1}", prefix, name));
+            while (System.IO.Directory.Exists(newFoldername))
+            {
+                name++;
+                if (name == int.MaxValue)
+                {
+                    prefix += "x";
+                    name = 0;
+                }
+                newFoldername = System.IO.Path.Combine(parentDirectory, String.Format("{0}{1}", prefix, name));
+            }
+
+            System.IO.Directory.Move(foldername, newFoldername);
+            System.IO.Directory.Delete(newFoldername);
+        }
+
 
     }
 }

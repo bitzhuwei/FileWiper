@@ -33,13 +33,16 @@
             this.btnUnregister = new System.Windows.Forms.Button();
             this.openFileDlg = new System.Windows.Forms.OpenFileDialog();
             this.btnDeleteFiles = new System.Windows.Forms.Button();
+            this.btnWipeFolder = new System.Windows.Forms.Button();
+            this.btnDeleteFolder = new System.Windows.Forms.Button();
+            this.openFolder = new System.Windows.Forms.FolderBrowserDialog();
             this.SuspendLayout();
             // 
             // btnWipeFiles
             // 
             this.btnWipeFiles.Location = new System.Drawing.Point(12, 12);
             this.btnWipeFiles.Name = "btnWipeFiles";
-            this.btnWipeFiles.Size = new System.Drawing.Size(228, 23);
+            this.btnWipeFiles.Size = new System.Drawing.Size(127, 23);
             this.btnWipeFiles.TabIndex = 0;
             this.btnWipeFiles.Text = "Wipe Files";
             this.btnWipeFiles.UseVisualStyleBackColor = true;
@@ -74,11 +77,31 @@
             // 
             this.btnDeleteFiles.Location = new System.Drawing.Point(12, 41);
             this.btnDeleteFiles.Name = "btnDeleteFiles";
-            this.btnDeleteFiles.Size = new System.Drawing.Size(228, 23);
+            this.btnDeleteFiles.Size = new System.Drawing.Size(127, 23);
             this.btnDeleteFiles.TabIndex = 0;
             this.btnDeleteFiles.Text = "Delete Files";
             this.btnDeleteFiles.UseVisualStyleBackColor = true;
             this.btnDeleteFiles.Click += new System.EventHandler(this.btnDeleteFiles_Click);
+            // 
+            // btnWipeFolder
+            // 
+            this.btnWipeFolder.Location = new System.Drawing.Point(145, 12);
+            this.btnWipeFolder.Name = "btnWipeFolder";
+            this.btnWipeFolder.Size = new System.Drawing.Size(127, 23);
+            this.btnWipeFolder.TabIndex = 0;
+            this.btnWipeFolder.Text = "Wipe Folder";
+            this.btnWipeFolder.UseVisualStyleBackColor = true;
+            this.btnWipeFolder.Click += new System.EventHandler(this.btnWipeFolder_Click);
+            // 
+            // btnDeleteFolder
+            // 
+            this.btnDeleteFolder.Location = new System.Drawing.Point(145, 41);
+            this.btnDeleteFolder.Name = "btnDeleteFolder";
+            this.btnDeleteFolder.Size = new System.Drawing.Size(127, 23);
+            this.btnDeleteFolder.TabIndex = 0;
+            this.btnDeleteFolder.Text = "Delete Folder";
+            this.btnDeleteFolder.UseVisualStyleBackColor = true;
+            this.btnDeleteFolder.Click += new System.EventHandler(this.btnDeleteFolder_Click);
             // 
             // FormMain
             // 
@@ -87,7 +110,9 @@
             this.ClientSize = new System.Drawing.Size(376, 131);
             this.Controls.Add(this.btnUnregister);
             this.Controls.Add(this.btnRegister);
+            this.Controls.Add(this.btnDeleteFolder);
             this.Controls.Add(this.btnDeleteFiles);
+            this.Controls.Add(this.btnWipeFolder);
             this.Controls.Add(this.btnWipeFiles);
             this.Name = "FormMain";
             this.Text = "File Wiper @ http://bitzhuwei.cnblogs.com";
@@ -102,5 +127,8 @@
         private System.Windows.Forms.Button btnUnregister;
         private System.Windows.Forms.OpenFileDialog openFileDlg;
         private System.Windows.Forms.Button btnDeleteFiles;
+        private System.Windows.Forms.Button btnWipeFolder;
+        private System.Windows.Forms.Button btnDeleteFolder;
+        private System.Windows.Forms.FolderBrowserDialog openFolder;
     }
 }
