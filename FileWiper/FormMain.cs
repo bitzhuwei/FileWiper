@@ -141,7 +141,35 @@ namespace FileWiper
 
         private void btnUnregister_Click(object sender, EventArgs e)
         {
+            //给所有类型的文件删除自定义的右键菜单
+            {
+                var itemName = "Wipe Content";
+                var associatedProgramFullPath = this.GetType().Assembly.Location;
+                //创建项：shell 
+                RegistryKey shellKey = Registry.ClassesRoot.OpenSubKey(@"*\shell", true);
+                if(shellKey!=null)
+                {
+                    shellKey.DeleteSubKeyTree(itemName, false);
+                }
 
+                //刷新到磁盘并释放资源
+                shellKey.Close();
+            }
+
+            //给所有文件夹删除自定义的右键菜单
+            {
+                var itemName = "Wipe Directory";
+                var associatedProgramFullPath = this.GetType().Assembly.Location;
+                //创建项：shell 
+                RegistryKey shellKey = Registry.ClassesRoot.OpenSubKey(@"directory\shell", true);
+                if (shellKey != null)
+                {
+                    shellKey.DeleteSubKeyTree(itemName, false);
+                }
+
+                //刷新到磁盘并释放资源
+                shellKey.Close();
+            }
         }
 
         private void btnWipeFolder_Click(object sender, EventArgs e)
