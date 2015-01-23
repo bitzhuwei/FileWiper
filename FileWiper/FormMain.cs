@@ -4,9 +4,11 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Microsoft.Win32;
 
 namespace FileWiper
 {
@@ -26,7 +28,7 @@ namespace FileWiper
                 {
                     try
                     {
-                        WipeFileContent(item);
+                        Helper.WipeFileContent(item);
                         count++;
                     }
                     catch (Exception ex)
@@ -39,13 +41,7 @@ namespace FileWiper
             }
         }
 
-        private void WipeFileContent(string filename)
-        {
-            using (var stream = new System.IO.StreamWriter(filename, false))
-            {
-                stream.Write("http://bitzhuwei.cnblogs.com");
-            }
-        }
+ 
 
         private void btnDeleteFiles_Click(object sender, EventArgs e)
         {
@@ -94,45 +90,51 @@ namespace FileWiper
         private void btnRegister_Click(object sender, EventArgs e)
         {
             //给所有类型的文件添加自定义的右键菜单
-            //创建项：shell 
-            RegistryKey shellKey = Registry.ClassesRoot.OpenSubKey(@"*\shell",true);
-            if (shellKey == null)
             {
-                shellKey = Registry.ClassesRoot.CreateSubKey(@"*\shell");  
-            }
-        
-            //创建项：右键显示的菜单名称
-            RegistryKey rightCommondKey = shellKey.CreateSubKey(itemName);
-            RegistryKey associatedProgramKey= rightCommondKey.CreateSubKey("command");
-        
-            //创建默认值：关联的程序
-            associatedProgramKey.SetValue(string.Empty, associatedProgramFullPath);
-        
-            //刷新到磁盘并释放资源
-            associatedProgramKey.Close();
-            rightCommondKey.Close();
-            shellKey.Close(); 
+                var itemName = "Wipe Content";
+                var associatedProgramFullPath = this.GetType().Assembly.Location;
+                //创建项：shell 
+                RegistryKey shellKey = Registry.ClassesRoot.OpenSubKey(@"*\shell", true);
+                if (shellKey == null)
+                {
+                    shellKey = Registry.ClassesRoot.CreateSubKey(@"*\shell");
+                }
 
-            //给所有文件夹添加自定义的右键菜单
-            //创建项：shell 
-            RegistryKey shellKey = Registry.ClassesRoot.OpenSubKey(@"directory\shell", true);
-            if (shellKey == null)
-            {
-                shellKey = Registry.ClassesRoot.CreateSubKey(@"*\shell");  
+                //创建项：右键显示的菜单名称
+                RegistryKey rightCommondKey = shellKey.CreateSubKey(itemName);
+                RegistryKey associatedProgramKey = rightCommondKey.CreateSubKey("command");
+
+                //创建默认值：关联的程序
+                associatedProgramKey.SetValue(string.Empty, associatedProgramFullPath + " %1");
+
+                //刷新到磁盘并释放资源
+                associatedProgramKey.Close();
+                rightCommondKey.Close();
+                shellKey.Close();
             }
-        
-            //创建项：右键显示的菜单名称
-            RegistryKey rightCommondKey = shellKey.CreateSubKey(itemName);
-            RegistryKey associatedProgramKey = rightCommondKey.CreateSubKey("command");
-        
-            //创建默认值：关联的程序
-            associatedProgramKey.SetValue("", associatedProgramFullPath);
-        
-        
-            //刷新到磁盘并释放资源
-            associatedProgramKey.Close();
-            rightCommondKey.Close();
-            shellKey.Close(); 
+
+            ////给所有文件夹添加自定义的右键菜单
+            //{
+            //    //创建项：shell 
+            //    RegistryKey shellKey = Registry.ClassesRoot.OpenSubKey(@"directory\shell", true);
+            //    if (shellKey == null)
+            //    {
+            //        shellKey = Registry.ClassesRoot.CreateSubKey(@"*\shell");
+            //    }
+
+            //    //创建项：右键显示的菜单名称
+            //    RegistryKey rightCommondKey = shellKey.CreateSubKey(itemName);
+            //    RegistryKey associatedProgramKey = rightCommondKey.CreateSubKey("command");
+
+            //    //创建默认值：关联的程序
+            //    associatedProgramKey.SetValue("", associatedProgramFullPath);
+
+
+            //    //刷新到磁盘并释放资源
+            //    associatedProgramKey.Close();
+            //    rightCommondKey.Close();
+            //    shellKey.Close();
+            //}
         }
 
         private void btnUnregister_Click(object sender, EventArgs e)
@@ -149,7 +151,7 @@ namespace FileWiper
                 {
                     try
                     {
-                        WipeFileContent(item);
+                        Helper.WipeFileContent(item);
                         count++;
                     }
                     catch (Exception ex)
