@@ -113,28 +113,30 @@ namespace FileWiper
                 shellKey.Close();
             }
 
-            ////给所有文件夹添加自定义的右键菜单
-            //{
-            //    //创建项：shell 
-            //    RegistryKey shellKey = Registry.ClassesRoot.OpenSubKey(@"directory\shell", true);
-            //    if (shellKey == null)
-            //    {
-            //        shellKey = Registry.ClassesRoot.CreateSubKey(@"*\shell");
-            //    }
+            //给所有文件夹添加自定义的右键菜单
+            {
+                var itemName = "Wipe Directory";
+                var associatedProgramFullPath = this.GetType().Assembly.Location;
+                //创建项：shell 
+                RegistryKey shellKey = Registry.ClassesRoot.OpenSubKey(@"directory\shell", true);
+                if (shellKey == null)
+                {
+                    shellKey = Registry.ClassesRoot.CreateSubKey(@"*\shell");
+                }
 
-            //    //创建项：右键显示的菜单名称
-            //    RegistryKey rightCommondKey = shellKey.CreateSubKey(itemName);
-            //    RegistryKey associatedProgramKey = rightCommondKey.CreateSubKey("command");
+                //创建项：右键显示的菜单名称
+                RegistryKey rightCommondKey = shellKey.CreateSubKey(itemName);
+                RegistryKey associatedProgramKey = rightCommondKey.CreateSubKey("command");
 
-            //    //创建默认值：关联的程序
-            //    associatedProgramKey.SetValue("", associatedProgramFullPath);
+                //创建默认值：关联的程序
+                associatedProgramKey.SetValue("", associatedProgramFullPath +" %1");
 
 
-            //    //刷新到磁盘并释放资源
-            //    associatedProgramKey.Close();
-            //    rightCommondKey.Close();
-            //    shellKey.Close();
-            //}
+                //刷新到磁盘并释放资源
+                associatedProgramKey.Close();
+                rightCommondKey.Close();
+                shellKey.Close();
+            }
         }
 
         private void btnUnregister_Click(object sender, EventArgs e)
