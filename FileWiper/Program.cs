@@ -15,26 +15,49 @@ namespace FileWiper
         [STAThread]
         static void Main(String[] args)
         {
-            if (args != null)
+            if (args != null && args.Length > 0)
             {
-                foreach (var item in args)
-                {
-                    try
-                    {
-                        Helper.WipeFileContent(item);
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show(ex.ToString(), "error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
-
-                }
+                Wipe(args);
             }
             else
             {
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
                 Application.Run(new FormMain());
+            }
+        }
+
+        private static void Wipe(String[] args)
+        {
+            foreach (var item in args)
+            {
+                try
+                {
+                    if (System.IO.File.Exists(item))
+                    {
+                        Helper.WipeFileContent(item);
+                    }
+                    else if (System.IO.Directory.Exists(item))
+                    {
+                        foreach (var file in System.IO.Directory.GetFiles(item))
+                        {
+                            try
+                            {
+                                Helper.WipeFileContent(file);
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show(ex.ToString(), "error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
+                        }
+
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.ToString(), "error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+
             }
         }
     }
