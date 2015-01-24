@@ -41,7 +41,7 @@ namespace FileWiper
             }
         }
 
- 
+
 
         private void btnDeleteFiles_Click(object sender, EventArgs e)
         {
@@ -65,6 +65,7 @@ namespace FileWiper
             }
         }
 
+        Random nameSeed = null;
         private void DeleteFile(string filename)
         {
             var fileInfo = new System.IO.FileInfo(filename);
@@ -74,8 +75,9 @@ namespace FileWiper
             var newFilename = System.IO.Path.Combine(directory, String.Format("{0}{1}", prefix, name));
             while (System.IO.File.Exists(newFilename))
             {
-                name++;
-                if (name == int.MaxValue)
+                if (nameSeed == null) { nameSeed = new Random(); }
+                name += nameSeed.Next();
+                if (name > int.MaxValue / 10)
                 {
                     prefix += "x";
                     name = 0;
@@ -87,88 +89,86 @@ namespace FileWiper
             System.IO.File.Delete(newFilename);
         }
 
+        class RegistryEntry
+        {
+            public string parentKey;
+            public string name;
+            public string associatedProgram;
+        }
         private void btnRegister_Click(object sender, EventArgs e)
         {
-            //给所有类型的文件添加自定义的右键菜单
+            var entries = new RegistryEntry[]
             {
-                var itemName = "Wipe Content";
-                var associatedProgramFullPath = this.GetType().Assembly.Location;
-                //创建项：shell 
-                RegistryKey shellKey = Registry.ClassesRoot.OpenSubKey(@"*\shell", true);
-                if (shellKey == null)
+                //给所有类型的文件添加自定义的右键菜单
+                new RegistryEntry(){ parentKey=@"*\shell", name="Wipe Content",
+                 associatedProgram=this.GetType().Assembly.Location},
+                //给所有文件夹添加自定义的右键菜单
+                new RegistryEntry(){ parentKey=@"directory\shell", name="Wipe Directory",
+                 associatedProgram=this.GetType().Assembly.Location}
+
+            };
+            try
+            {
+                foreach (var item in entries)
                 {
-                    shellKey = Registry.ClassesRoot.CreateSubKey(@"*\shell");
+                    //创建项：shell 
+                    RegistryKey shellKey = Registry.ClassesRoot.OpenSubKey(item.parentKey, true);
+                    if (shellKey == null)
+                    {
+                        shellKey = Registry.ClassesRoot.CreateSubKey(item.parentKey);
+                    }
+
+                    //创建项：右键显示的菜单名称
+                    using (var rightCmd = shellKey.CreateSubKey(item.name))
+                    {
+                        using (var associatedProgram = rightCmd.CreateSubKey("command"))
+                        {
+                            //创建默认值：关联的程序
+                            associatedProgram.SetValue(string.Empty,
+                                item.associatedProgram + " %1");
+                        }
+                    }
+
+                    //刷新到磁盘并释放资源
+                    shellKey.Close();
                 }
-
-                //创建项：右键显示的菜单名称
-                RegistryKey rightCommondKey = shellKey.CreateSubKey(itemName);
-                RegistryKey associatedProgramKey = rightCommondKey.CreateSubKey("command");
-
-                //创建默认值：关联的程序
-                associatedProgramKey.SetValue(string.Empty, associatedProgramFullPath + " %1");
-
-                //刷新到磁盘并释放资源
-                associatedProgramKey.Close();
-                rightCommondKey.Close();
-                shellKey.Close();
+                MessageBox.Show("Registered successfully!");
+            }
+            catch (System.Security.SecurityException se)
+            {
+                MessageBox.Show("Please start this program with Administrator and try again.");
             }
 
-            //给所有文件夹添加自定义的右键菜单
-            {
-                var itemName = "Wipe Directory";
-                var associatedProgramFullPath = this.GetType().Assembly.Location;
-                //创建项：shell 
-                RegistryKey shellKey = Registry.ClassesRoot.OpenSubKey(@"directory\shell", true);
-                if (shellKey == null)
-                {
-                    shellKey = Registry.ClassesRoot.CreateSubKey(@"*\shell");
-                }
-
-                //创建项：右键显示的菜单名称
-                RegistryKey rightCommondKey = shellKey.CreateSubKey(itemName);
-                RegistryKey associatedProgramKey = rightCommondKey.CreateSubKey("command");
-
-                //创建默认值：关联的程序
-                associatedProgramKey.SetValue("", associatedProgramFullPath +" %1");
-
-
-                //刷新到磁盘并释放资源
-                associatedProgramKey.Close();
-                rightCommondKey.Close();
-                shellKey.Close();
-            }
         }
-
         private void btnUnregister_Click(object sender, EventArgs e)
         {
-            //给所有类型的文件删除自定义的右键菜单
+            var entries = new RegistryEntry[]
             {
-                var itemName = "Wipe Content";
-                var associatedProgramFullPath = this.GetType().Assembly.Location;
-                //创建项：shell 
-                RegistryKey shellKey = Registry.ClassesRoot.OpenSubKey(@"*\shell", true);
-                if(shellKey!=null)
-                {
-                    shellKey.DeleteSubKeyTree(itemName, false);
-                }
+                //给所有类型的文件添加自定义的右键菜单
+                new RegistryEntry(){ parentKey=@"*\shell", name="Wipe Content"},
+                //给所有文件夹添加自定义的右键菜单
+                new RegistryEntry(){ parentKey=@"directory\shell", name="Wipe Directory"}
 
-                //刷新到磁盘并释放资源
-                shellKey.Close();
+            };
+            try
+            {
+                foreach (var item in entries)
+                {
+                    //创建项：shell 
+                    RegistryKey shellKey = Registry.ClassesRoot.OpenSubKey(item.parentKey, true);
+                    if (shellKey != null)
+                    {
+                        shellKey.DeleteSubKeyTree(item.name, false);
+                    }
+
+                    //刷新到磁盘并释放资源
+                    shellKey.Close();
+                }
+                MessageBox.Show("Unregistered successfully!");
             }
-
-            //给所有文件夹删除自定义的右键菜单
+            catch (System.Security.SecurityException se)
             {
-                var itemName = "Wipe Directory";
-                var associatedProgramFullPath = this.GetType().Assembly.Location;
-                //创建项：shell 
-                RegistryKey shellKey = Registry.ClassesRoot.OpenSubKey(@"directory\shell", true);
-                if (shellKey != null)
-                {
-                    shellKey.DeleteSubKeyTree(itemName, false);
-                }
-
-                //刷新到磁盘并释放资源
-                shellKey.Close();
+                MessageBox.Show("Please start this program with Administrator and try again.");
             }
         }
 
@@ -197,7 +197,7 @@ namespace FileWiper
 
         private void btnDeleteFolder_Click(object sender, EventArgs e)
         {
-            if(this.openFolder.ShowDialog()== System.Windows.Forms.DialogResult.OK)
+            if (this.openFolder.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 var count = 0;
                 foreach (var item in System.IO.Directory.GetFiles(this.openFolder.SelectedPath))
