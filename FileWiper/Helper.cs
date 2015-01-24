@@ -11,9 +11,23 @@ namespace FileWiper
     {
         public static void WipeFileContent(string filename)
         {
-            using (var stream = new System.IO.StreamWriter(filename, false))
+            try
             {
-                stream.Write("http://bitzhuwei.cnblogs.com");
+                using (var stream = new System.IO.StreamWriter(filename, false))
+                {
+                    stream.Write("http://bitzhuwei.cnblogs.com");
+                }
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        internal static void WipeDirectory(string directoryName, System.IO.SearchOption wipeOption)
+        {
+            foreach (var item in System.IO.Directory.GetFiles(directoryName, "*", wipeOption))
+            {
+                WipeFileContent(item);
             }
         }
     }

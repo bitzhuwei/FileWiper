@@ -39,18 +39,7 @@ namespace FileWiper
                     }
                     else if (System.IO.Directory.Exists(item))
                     {
-                        foreach (var file in System.IO.Directory.GetFiles(item))
-                        {
-                            try
-                            {
-                                Helper.WipeFileContent(file);
-                            }
-                            catch (Exception ex)
-                            {
-                                MessageBox.Show(ex.ToString(), "error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            }
-                        }
-
+                        Helper.WipeDirectory(item, System.IO.SearchOption.AllDirectories);
                     }
                 }
                 catch (Exception ex)
