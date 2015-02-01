@@ -9,26 +9,35 @@ namespace FileWiper
 {
     class Helper
     {
-        public static void WipeFileContent(string filename)
+        public static bool WipeFileContent(string filename)
         {
             try
             {
+                var fileInfo = new System.IO.FileInfo(filename);
+                fileInfo.IsReadOnly = false;
                 using (var stream = new System.IO.StreamWriter(filename, false))
                 {
                     stream.Write("http://bitzhuwei.cnblogs.com");
                 }
+                return true;
             }
             catch (Exception)
             {
+                return false;
             }
         }
 
-        internal static void WipeDirectory(string directoryName, System.IO.SearchOption wipeOption)
+        internal static int WipeDirectory(string directoryName, System.IO.SearchOption wipeOption)
         {
+            var count = 0;
             foreach (var item in System.IO.Directory.GetFiles(directoryName, "*", wipeOption))
             {
-                WipeFileContent(item);
+                if (WipeFileContent(item))
+                {
+                    count++;
+                }
             }
+            return count;
         }
     }
 }

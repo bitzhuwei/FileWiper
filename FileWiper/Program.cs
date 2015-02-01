@@ -33,6 +33,7 @@ namespace FileWiper
             {
                 try
                 {
+                    MessageBox.Show(string.Format("Press OK to start wiping {0}.", item));
                     if (System.IO.File.Exists(item))
                     {
                         Helper.WipeFileContent(item);

@@ -28,8 +28,10 @@ namespace FileWiper
                 {
                     try
                     {
-                        Helper.WipeFileContent(item);
-                        count++;
+                        if (Helper.WipeFileContent(item))
+                        {
+                            count++;
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -177,12 +179,12 @@ namespace FileWiper
             if (this.openFolder.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 var count = 0;
-                foreach (var item in System.IO.Directory.GetFiles(this.openFolder.SelectedPath))
+                foreach (var item in System.IO.Directory.GetFiles(this.openFolder.SelectedPath, "*", System.IO.SearchOption.AllDirectories))
                 {
                     try
                     {
-                        Helper.WipeFileContent(item);
-                        count++;
+                        if (Helper.WipeFileContent(item))
+                        { count++; }
                     }
                     catch (Exception ex)
                     {
@@ -200,7 +202,7 @@ namespace FileWiper
             if (this.openFolder.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 var count = 0;
-                foreach (var item in System.IO.Directory.GetFiles(this.openFolder.SelectedPath))
+                foreach (var item in System.IO.Directory.GetFiles(this.openFolder.SelectedPath, "*", System.IO.SearchOption.AllDirectories))
                 {
                     try
                     {
