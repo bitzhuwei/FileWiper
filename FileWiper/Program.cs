@@ -33,10 +33,13 @@ namespace FileWiper
             {
                 try
                 {
-                    MessageBox.Show(string.Format("Press OK to start wiping {0}.", item));
+                    //MessageBox.Show(string.Format("Press OK to start wiping {0}.", item));
                     if (System.IO.File.Exists(item))
                     {
-                        Helper.WipeFileContent(item);
+                        if (MessageBox.Show(string.Format("Press Yes to wipe {0}.", item), "Confirm", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                        {
+                            Helper.WipeFileContent(item);
+                        }
                     }
                     else if (System.IO.Directory.Exists(item))
                     {
